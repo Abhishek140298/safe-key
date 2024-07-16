@@ -24,9 +24,15 @@ async function checkUserExists(req, res) {
   console.log("Req.params", req.params, User);
   try {
     const mobileNumber = Number(req.params.mobileNumber);
+    if(mobileNumber.length!==10){
+        res.status(400).json({ error: "Mobile number is invalid"});
+        return
+    }
     const checkNumber = await User.findOne({ mobileNumber: mobileNumber });
+
+
     if (!checkNumber) {
-      res.status(404).json({ error: "Mobile number does not exist" });
+      res.status(404).json({ error: "Mobile number does not exist",userExist:false });
     } else {
       res.status(200).send({ userExist: true });
     }
@@ -42,6 +48,7 @@ async function checkMpinCorrect(req, res) {
     const getMpinOfNumber = await User.findOne({ mobileNumber: mobileNumber });
     if (!getMpinOfNumber) {
       res.status(404).json({ error: "Mobile number does not exist" });
+      
     } else if (getMpinOfNumber.mpin == mpin) {
       res.status(200).send({ mpin: true });
     } else {
