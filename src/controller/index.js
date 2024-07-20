@@ -21,18 +21,20 @@ async function createmPin(req, res) {
 }
 
 async function checkUserExists(req, res) {
-  console.log("Req.params", req.params, User);
+  console.log("Req.params", req.params,  Number(req.params.mobileNumber));
   try {
-    const mobileNumber = Number(req.params.mobileNumber);
-    if(mobileNumber.length!==10){
-        res.status(400).json({ error: "Mobile number is invalid"});
-        return
+    let stringmobileNumber=req.params.mobileNumber
+    const mobileNumber = Number(stringmobileNumber);
+    console.log("Number",mobileNumber.length)
+    if (stringmobileNumber.length !== 10) {
+      return res.status(400).json({ error: "Mobile number is invalid" });
     }
     const checkNumber = await User.findOne({ mobileNumber: mobileNumber });
 
-
     if (!checkNumber) {
-      res.status(404).json({ error: "Mobile number does not exist",userExist:false });
+      res
+        .status(404)
+        .json({ error: "Mobile number does not exist", userExist: false });
     } else {
       res.status(200).send({ userExist: true });
     }
@@ -48,7 +50,6 @@ async function checkMpinCorrect(req, res) {
     const getMpinOfNumber = await User.findOne({ mobileNumber: mobileNumber });
     if (!getMpinOfNumber) {
       res.status(404).json({ error: "Mobile number does not exist" });
-      
     } else if (getMpinOfNumber.mpin == mpin) {
       res.status(200).send({ mpin: true });
     } else {
@@ -80,7 +81,7 @@ async function createOriginAndPassword(req, res) {
       res.status(200).send(newOriginpaaPassword);
     }
   } catch (error) {
-    res.status(400).send(err);
+    res.status(400).send(error);
   }
 }
 
@@ -131,19 +132,14 @@ async function updateOriginAndPassword(req, res) {
   }
 }
 
-
-async function deleteUserOriginAndPassword(req,res){
-    try{
-        const _id=req.params.originpassId
-        const deleteOriginAndPass=await UserDetails.findByIdAndDelete(_id)
-        res.status(200).send({status:"OK",
-  data:deleteOriginAndPass  })
-
-    }
-    catch(err){
-        res.status(400).send(err);
-
-    }
+async function deleteUserOriginAndPassword(req, res) {
+  try {
+    const _id = req.params.originpassId;
+    const deleteOriginAndPass = await UserDetails.findByIdAndDelete(_id);
+    res.status(200).send({ status: "OK", data: deleteOriginAndPass });
+  } catch (err) {
+    res.status(400).send(err);
+  }
 }
 
 module.exports = {
@@ -153,5 +149,5 @@ module.exports = {
   createOriginAndPassword,
   getAllOriginAndPassword,
   updateOriginAndPassword,
-  deleteUserOriginAndPassword
+  deleteUserOriginAndPassword,
 };

@@ -7,7 +7,7 @@ const userSchema=new mongoose.Schema({
         rquired:true,
     },
     mpin:{
-        type:Number,
+        type:String,
         required:true
     }
 })

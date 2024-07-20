@@ -1,23 +1,28 @@
-const express=require('express')
-const indexRouter=require('./router')
-const mongoose = require('mongoose')
+require('dotenv').config();
+const express = require("express");
+const indexRouter = require("./router");
+const mongoose = require("mongoose");
+var cors = require('cors')
 
 
-const app=express()
-const ulri='mongodb+srv://abhishekyadavfeb1498:pZmiwgII4dEqLlyY@keyoriginpassword.8nqivwy.mongodb.net/?retryWrites=true&w=majority&appName=keyOriginPassword'
+const app = express();
+const ulri =process.env.DATABASE_URL
 
-mongoose.connect(ulri, {
-    useNewUrlParser: true, useUnifiedTopology: true
-})
-.then(() => console.log('Database connection successfull'))
-.catch((err) => console.log('error in db connection', err));
+mongoose
+  .connect(ulri, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("Database connection successfull"))
+  .catch((err) => console.log("error in db connection", err));
 
-const port=process.env.PORT||3000
-app.use(express.json())
+const port = process.env.PORT || 3000;
+app.use(cors())
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/',indexRouter)
+app.use("/", indexRouter);
 
-app.listen(port,()=>{
-    "Server is running on" + port
-})
+app.listen(port, () => {
+  "Server is running on" + port;
+});
