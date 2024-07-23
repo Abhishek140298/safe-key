@@ -2,7 +2,6 @@ const User = require("../model/user");
 const UserDetails = require("../model/useoriginAndPassword");
 
 async function createmPin(req, res) {
-  console.log("Req body", req.body);
   try {
     const { mpin, mobileNumber } = req.body;
 
@@ -21,11 +20,10 @@ async function createmPin(req, res) {
 }
 
 async function checkUserExists(req, res) {
-  console.log("Req.params", req.params,  Number(req.params.mobileNumber));
+  console.log("Req.params", req.params, Number(req.params.mobileNumber));
   try {
-    let stringmobileNumber=req.params.mobileNumber
+    let stringmobileNumber = req.params.mobileNumber;
     const mobileNumber = Number(stringmobileNumber);
-    console.log("Number",mobileNumber.length)
     if (stringmobileNumber.length !== 10) {
       return res.status(400).json({ error: "Mobile number is invalid" });
     }
