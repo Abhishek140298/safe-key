@@ -3,7 +3,7 @@ const router=express.Router()
 const userController=require('../controller')
 
 router.get('/get',((req,res)=>{
-    res.send("Nooo")
+    res.send("Wrong ")
 }))
 
 
