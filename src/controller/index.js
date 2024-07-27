@@ -2,7 +2,6 @@ const User = require("../model/user");
 const UserDetails = require("../model/useoriginAndPassword");
 
 async function createmPin(req, res) {
-  console.log("Req body", req.body);
   try {
     const { mpin, mobileNumber } = req.body;
 
@@ -10,9 +9,14 @@ async function createmPin(req, res) {
       mobileNumber: mobileNumber,
       mpin: mpin,
     });
-
+    const checkNumber = await User.findOne({ mobileNumber: mobileNumber });
+if(!checkNumber){
     await newUser.save();
-    res.status(200).send(newUser);
+    res.status(200).send(newUser);}
+    else{
+      res.status(409).send("User already exist");}
+
+    
   } catch (err) {
     console.log("User", err);
 
@@ -21,12 +25,19 @@ async function createmPin(req, res) {
 }
 
 async function checkUserExists(req, res) {
-  console.log("Req.params", req.params, User);
+  console.log("Req.params", req.params, Number(req.params.mobileNumber));
   try {
-    const mobileNumber = Number(req.params.mobileNumber);
+    let stringmobileNumber = req.params.mobileNumber;
+    const mobileNumber = Number(stringmobileNumber);
+    if (stringmobileNumber.length !== 10) {
+      return res.status(400).json({ error: "Mobile number is invalid" });
+    }
     const checkNumber = await User.findOne({ mobileNumber: mobileNumber });
+
     if (!checkNumber) {
-      res.status(404).json({ error: "Mobile number does not exist" });
+      res
+        .status(404)
+        .json({ error: "Mobile number does not exist", userExist: false });
     } else {
       res.status(200).send({ userExist: true });
     }
@@ -62,6 +73,10 @@ async function createOriginAndPassword(req, res) {
     if (!checkMobileNumber) {
       res.status(404).json({ error: "Mobile number does not exist" });
     } else {
+      const checkOriginUserName=await UserDetails.findOne({  originName: originName})
+         console.log(checkOriginUserName,"jgkhs")
+      if(!checkOriginUserName||checkOriginUserName.user_id===checkMobileNumber._id){
+        
       const newOriginpaaPassword = new UserDetails({
         user_id: checkMobileNumber._id,
         originName: originName,
@@ -70,10 +85,13 @@ async function createOriginAndPassword(req, res) {
 
       await newOriginpaaPassword.save();
 
-      res.status(200).send(newOriginpaaPassword);
+      res.status(200).send(newOriginpaaPassword);}
+      else{
+        res.status(409).send({message:"Origin Name alredy exist"})
+      }
     }
   } catch (error) {
-    res.status(400).send(err);
+    res.status(400).send(error);
   }
 }
 
@@ -103,7 +121,7 @@ async function getAllOriginAndPassword(req, res) {
 
 async function updateOriginAndPassword(req, res) {
   try {
-    const { _id, originName, originPassword } = req.body;
+    const { _id } = req.body;
     if (_id) {
       const prevData = await UserDetails.findOne({ _id: _id });
 
@@ -124,19 +142,14 @@ async function updateOriginAndPassword(req, res) {
   }
 }
 
-
-async function deleteUserOriginAndPassword(req,res){
-    try{
-        const _id=req.params.originpassId
-        const deleteOriginAndPass=await UserDetails.findByIdAndDelete(_id)
-        res.status(200).send({status:"OK",
-  data:deleteOriginAndPass  })
-
-    }
-    catch(err){
-        res.status(400).send(err);
-
-    }
+async function deleteUserOriginAndPassword(req, res) {
+  try {
+    const _id = req.params.originpassId;
+    const deleteOriginAndPass = await UserDetails.findByIdAndDelete(_id);
+    res.status(200).send({ status: "OK", data: deleteOriginAndPass });
+  } catch (err) {
+    res.status(400).send(err);
+  }
 }
 
 module.exports = {
@@ -146,5 +159,5 @@ module.exports = {
   createOriginAndPassword,
   getAllOriginAndPassword,
   updateOriginAndPassword,
-  deleteUserOriginAndPassword
+  deleteUserOriginAndPassword,
 };
