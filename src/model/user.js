@@ -4,6 +4,8 @@ const userSchema = new mongoose.Schema({
   mobileNumber: {
     type: Number,
     rquired: true,
+    unique: true,
+
   },
   mpin: {
     type: String,
