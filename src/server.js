@@ -2,7 +2,6 @@ require("dotenv").config();
 const express = require("express");
 const indexRouter = require("./router");
 const mongoose = require("mongoose");
-const express = require("express");
 var cors = require("cors");
 
 const router = express.Router();
