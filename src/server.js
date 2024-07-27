@@ -7,6 +7,11 @@ var cors = require("cors");
 const app = express();
 const URL = process.env.DATABASE_URL;
 
+router.get("/health-check", (req, res) => {
+  res.send("true");
+});
+
+
 mongoose
   .connect(URL, {
     useNewUrlParser: true,
